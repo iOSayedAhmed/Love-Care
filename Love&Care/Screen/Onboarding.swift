@@ -47,6 +47,43 @@ struct Onboarding: View {
                 Spacer()
                 
                 //MARK: Footer
+                ZStack{
+                    //Capsule
+                    Capsule()
+                        .fill(.white.opacity(0.2))
+                    Capsule()
+                        .fill(.white.opacity(0.2))
+                        .padding(8)
+                    // Text of Capsule
+                    Text("Start")
+                        .font(.system(size: 30, weight: .bold, design: .default))
+                        .foregroundColor(.white)
+                    //Dynamic Capsule
+                    HStack {
+                        Capsule()
+                            .fill(Color("ColorRed"))
+                        .frame(width: 80)
+                        Spacer()
+                    }//HStack
+                    //Dragable Circle
+                    HStack {
+                        ZStack{
+                            Circle()
+                                .fill(Color("ColorRed"))
+                            Circle()
+                                .fill(.black.opacity(0.2))
+                                .padding(8)
+                            Image(systemName: "chevron.right.2")
+                                .font(.system(size: 24, weight: .bold, design: .rounded))
+                                .foregroundColor(.white)
+                        }//ZStack
+                        .frame(width: 80, alignment:.center)
+                        Spacer()
+                    }//HStack
+                    
+                }//ZStack (end of Footer)
+                .frame(height: 80, alignment: .center)
+                .padding(.horizontal,10)
                 
             }//: VStack
           
