@@ -9,6 +9,8 @@ import SwiftUI
 
 struct Onboarding: View {
     @AppStorage("isOnboarding") var isOnboarding: Bool = true
+    @State var isAnimating:Bool = false
+    @State var imageOffset : CGSize = CGSize(width: 0.0, height: 0.0)
     var body: some View {
         ZStack{
             Color("ColorBlue")
@@ -26,23 +28,46 @@ struct Onboarding: View {
                         .multilineTextAlignment(.center)
                     
                 }//VStack (enf of Header)
+                .offset( y: isAnimating ? 0 : -50)
+                .animation(.easeOut(duration: 1), value: isAnimating)
                 Spacer()
                 //MARK: Center
                 ZStack{
                     CircleGroupView(circleGroupColor: .white)
+                        .offset(x: -(imageOffset.width) )
+                        .blur(radius: abs(imageOffset.width)/10, opaque: false)
                     Image("happy-pregnant")
                         .resizable()
                         .scaledToFit()
                         .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.5), radius: 8, x: 3, y: 30)
+                        .offset(x: imageOffset.width)
+                        .rotationEffect(.degrees(imageOffset.width / 15))
+                        .gesture(DragGesture()
+                            .onChanged({ gesture in
+                                if abs(gesture.translation.width ) <= 150 {
+                                    imageOffset = gesture.translation
+                                }
+                            })
+                                .onEnded({ _ in
+                                    withAnimation(.easeOut(duration: 0.5)){
+                                        imageOffset = .zero
+                                    }
+                                    
+                                })
+                        
+                        )
                         .overlay(
                     Image(systemName: "arrow.left.and.right.circle")
                         .font(.system(size: 40, weight: .ultraLight
                                       , design: .rounded))
                         .foregroundColor(.white)
+                        .opacity(abs(imageOffset.width)>0 ? 0 : 1)
                     ,alignment: .bottom
-                        
                     
                     )
+                        .frame(width: 300, alignment: .center)
+                    
+                        
                 }//ZStack (end of Center)
                 Spacer()
                 
@@ -80,16 +105,22 @@ struct Onboarding: View {
                         .frame(width: 80, alignment:.center)
                         Spacer()
                     }//HStack
+                   
                     
                 }//ZStack (end of Footer)
                 .frame(height: 80, alignment: .center)
                 .padding(.horizontal,10)
+                .offset( y: isAnimating ? 0 : 100)
+                .animation(.easeOut(duration: 1), value: isAnimating)
                 
             }//: VStack
           
            
             
         }//: ZStack
+        .onAppear {
+            isAnimating.toggle()
+        }
     
         
     }
