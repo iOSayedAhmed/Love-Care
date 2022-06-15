@@ -11,6 +11,8 @@ struct Onboarding: View {
     @AppStorage("isOnboarding") var isOnboarding: Bool = true
     @State var isAnimating:Bool = false
     @State var imageOffset : CGSize = CGSize(width: 0.0, height: 0.0)
+    @State var dragableCircleOffset : CGFloat = 0.0
+    @State var buttonWidth : Double = UIScreen.main.bounds.width - 80
     var body: some View {
         ZStack{
             Color("ColorBlue")
@@ -19,7 +21,7 @@ struct Onboarding: View {
                 
                 //MARK: Header
                 VStack{
-                    Text("Love.")
+                    Text(abs(imageOffset.width) > 0.0 ? "Care." : "love.")
                         .foregroundColor(.white)
                         .font(.system(size: 60, weight: .bold, design: .default))
                     Text("Life dosen't come with a manua, it comes with a mather")
@@ -54,20 +56,20 @@ struct Onboarding: View {
                                     }
                                     
                                 })
-                        
+                                 
                         )
                         .overlay(
-                    Image(systemName: "arrow.left.and.right.circle")
-                        .font(.system(size: 40, weight: .ultraLight
-                                      , design: .rounded))
-                        .foregroundColor(.white)
-                        .opacity(abs(imageOffset.width)>0 ? 0 : 1)
-                    ,alignment: .bottom
-                    
-                    )
+                            Image(systemName: "arrow.left.and.right.circle")
+                                .font(.system(size: 40, weight: .ultraLight
+                                              , design: .rounded))
+                                .foregroundColor(.white)
+                                .opacity(abs(imageOffset.width)>0 ? 0 : 1)
+                            ,alignment: .bottom
+                            
+                        )
                         .frame(width: 300, alignment: .center)
                     
-                        
+                    
                 }//ZStack (end of Center)
                 Spacer()
                 
@@ -83,13 +85,16 @@ struct Onboarding: View {
                     Text("Start")
                         .font(.system(size: 30, weight: .bold, design: .default))
                         .foregroundColor(.white)
+                    
                     //Dynamic Capsule
                     HStack {
                         Capsule()
                             .fill(Color("ColorRed"))
-                        .frame(width: 80)
+                            .frame(width: 80 + dragableCircleOffset)
+                            //.offset(x: dragableCircleOffset)
                         Spacer()
                     }//HStack
+                    
                     //Dragable Circle
                     HStack {
                         ZStack{
@@ -103,25 +108,48 @@ struct Onboarding: View {
                                 .foregroundColor(.white)
                         }//ZStack
                         .frame(width: 80, alignment:.center)
+                        .offset(x: dragableCircleOffset)
                         Spacer()
                     }//HStack
-                   
+                    .gesture(DragGesture()
+                        .onChanged({ gesture in
+                            if (gesture.translation.width) > 0.0  && (gesture.translation.width) <= buttonWidth - 50 {
+                                dragableCircleOffset =   gesture.translation.width
+                            }
+                            
+                        })
+                            .onEnded({ _ in
+                                withAnimation(.easeOut(duration: 0.3)) {
+                                    
+                                    
+                                    if (dragableCircleOffset) <= buttonWidth / 2 {
+                                        dragableCircleOffset = .zero
+                                    }else {
+                                        dragableCircleOffset = buttonWidth - 50
+                                        isOnboarding = false
+                                    }
+                                }
+                            })
+                             
+                             
+                    )
+                    
                     
                 }//ZStack (end of Footer)
                 .frame(height: 80, alignment: .center)
-                .padding(.horizontal,10)
+                .padding(.horizontal,30)
                 .offset( y: isAnimating ? 0 : 100)
                 .animation(.easeOut(duration: 1), value: isAnimating)
                 
             }//: VStack
-          
-           
+            
+            
             
         }//: ZStack
         .onAppear {
             isAnimating.toggle()
         }
-    
+        
         
     }
 }
